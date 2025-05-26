@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://br7iaod42jvnd"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf4mk"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_37kl0"]
+
+[node name="Test" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_mf4mk")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_mf4mk")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_37kl0")
