@@ -1,8 +1,8 @@
 [gd_scene load_steps=3 format=3 uid="uid://br7iaod42jvnd"]
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf4mk"]
+[ext_resource type="Material" uid="uid://cu11dup3htxw" path="res://test_resource.tres" id="1_37kl0"]
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_37kl0"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf4mk"]
 
 [node name="Test" type="Node2D"]
 
@@ -13,4 +13,7 @@ material = SubResource("CanvasItemMaterial_mf4mk")
 material = SubResource("CanvasItemMaterial_mf4mk")
 
 [node name="Sprite2D3" type="Sprite2D" parent="."]
-material = SubResource("CanvasItemMaterial_37kl0")
+material = ExtResource("1_37kl0")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+material = ExtResource("1_37kl0")

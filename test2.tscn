@@ -4,7 +4,7 @@
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf4mk"]
 
-[node name="Test" type="Node2D"]
+[node name="Test2" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("CanvasItemMaterial_mf4mk")

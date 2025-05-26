@@ -24,19 +24,27 @@ func _update_property():
 		var resource_id = resource_path.split("::")[1]
 		var scene_file = FileAccess.open(scene_path, FileAccess.READ)
 		var as_text = scene_file.get_as_text()
-		local_users += as_text.count(resource_id)-1 # -1 because it ignores the resource definition
+		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
 		var all_tscns = get_all_files("res://", '.tscn')
 		for scene_path in all_tscns:
 			var scene_file = FileAccess.open(scene_path, FileAccess.READ)
 			var as_text = scene_file.get_as_text()
-			var count = as_text.count(resource_id)
+			var resource_loading_step_index = as_text.find(resource_id)
+			var next_square_bracket_subindex = as_text.substr(resource_loading_step_index, 1000).find("]")
+			var count = -1  # -1 because it ignores the resource definition
+			var split_text = as_text.substr(resource_loading_step_index, next_square_bracket_subindex).split("id=")
+			if len(split_text)>1:
+				var resource_local_id = split_text[1].lstrip("\"").rstrip("\"")
+				count += as_text.count(resource_local_id)
+				# print_debug(scene_path, " ", count)
 			if count>0:
 				if scene_path==get_tree().edited_scene_root.scene_file_path:
 					# the local scene is one of the scenes that contain the resource!
-					local_users += 1
-			global_users += count
+					local_users += count
+				else:
+					global_users += count
 	var total_users = local_users+global_users
 	var locals = "({0} local)".format([local_users])
 	var unique = " - UNIQUE" if total_users==1 else ""
