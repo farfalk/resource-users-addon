@@ -11,21 +11,23 @@ var current_value: String = ""
 
 var _latest_path: String = ""
 
+
 func _init():
-	# Add the control as a direct child of EditorProperty node.
 	add_child(property_control)
-	refresh_control_text()
+	_refresh_control_text()
 	property_control.modulate = Color.WHITE
 	read_only = true
+
 
 func _process(_delta):
 	if get_edited_object():
 		var resource_path = get_edited_object().resource_path
 		if !resource_path && (current_value != NEWLY_ADDED):
 			current_value = NEWLY_ADDED
-			refresh_control_text()
+			_refresh_control_text()
 		elif _latest_path != resource_path:
 			_update_property()
+
 
 func _update_property():
 	var resource: Resource = get_edited_object()
@@ -36,7 +38,6 @@ func _update_property():
 		_latest_path = resource_path
 	var local_users = 0
 	var global_users = 0
-	# TODO add support for tres files
 	if resource_path.contains("tscn::"):
 		# local resource (saved in scene)
 		var scene_path = resource_path.split("::")[0]
@@ -44,12 +45,21 @@ func _update_property():
 		var scene_file = FileAccess.open(scene_path, FileAccess.READ)
 		var as_text = scene_file.get_as_text()
 		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
+	elif resource_path.contains("tres::"):
+		# local sub-resource (saved in resource)
+		var main_resource_path = resource_path.split("::")[0]
+		var resource_id = resource_path.split("::")[1]
+		var scene_file = FileAccess.open(main_resource_path, FileAccess.READ)
+		var as_text = scene_file.get_as_text()
+		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
 		var all_tscns = _get_all_files("res://", '.tscn')
-		for scene_path in all_tscns:
-			var scene_file = FileAccess.open(scene_path, FileAccess.READ)
-			var as_text = scene_file.get_as_text()
+		var all_tres = _get_all_files("res://", '.tres')
+		var all_files = all_tscns + all_tres
+		for file_path in all_files:
+			var file = FileAccess.open(file_path, FileAccess.READ)
+			var as_text = file.get_as_text()
 			var resource_loading_step_index = as_text.find(resource_id)
 			var next_square_bracket_subindex = as_text.substr(resource_loading_step_index, 1000).find("]")
 			var count = -1  # -1 because it ignores the resource definition
@@ -57,9 +67,9 @@ func _update_property():
 			if len(split_text)>1:
 				var resource_local_id = split_text[1].lstrip("\"").rstrip("\"")
 				count += as_text.count(resource_local_id)
-				# print_debug(scene_path, " ", count)
 			if count>0:
-				if scene_path==get_tree().edited_scene_root.scene_file_path:
+				_log("found {0} occurrences in {1}".format([count, file_path]))
+				if file_path==get_tree().edited_scene_root.scene_file_path:
 					# the local scene is one of the scenes that contain the resource!
 					local_users += count
 				else:
@@ -73,9 +83,10 @@ func _update_property():
 			current_value = "🔗 {0} users {1}".format([total_users, locals])
 	else:
 		current_value = ""
-	refresh_control_text()
+	_refresh_control_text()
 
-func refresh_control_text():
+
+func _refresh_control_text():
 	if !current_value:
 		return
 	_log("REFRESH: {0}".format([current_value]))
