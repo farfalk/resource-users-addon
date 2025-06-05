@@ -1,3 +1,6 @@
-[gd_resource type="CanvasItemMaterial" format=3 uid="uid://cu11dup3htxw"]
+[gd_resource type="CanvasItemMaterial" load_steps=2 format=3 uid="uid://cu11dup3htxw"]
+
+[sub_resource type="GDScript" id="GDScript_h82pd"]
 
 [resource]
+script = SubResource("GDScript_h82pd")

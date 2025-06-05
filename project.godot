@@ -13,7 +13,7 @@ config_version=5
 config/name="Resource Users Addon"
 config/description="A simple inspector plugin that counts all users of a resource"
 config/version="0.1"
-config/features=PackedStringArray("4.4", "GL Compatibility")
+config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [editor_plugins]

@@ -1,13 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://bukeui71g4bp6"]
+[gd_scene load_steps=4 format=3 uid="uid://bukeui71g4bp6"]
 
 [ext_resource type="Material" uid="uid://cu11dup3htxw" path="res://test_resource.tres" id="1_vfvc6"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_vfvc6"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_mf4mk"]
 
 [node name="Test2" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-material = SubResource("CanvasItemMaterial_mf4mk")
+material = SubResource("CanvasItemMaterial_vfvc6")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
 material = SubResource("CanvasItemMaterial_mf4mk")

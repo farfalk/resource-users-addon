@@ -1,23 +1,42 @@
 @tool
 extends EditorProperty
 
+const DEBUG_MODE = true
 
-var property_control = Label.new()
-var current_value = ""
+const NEWLY_ADDED = "(newly added, save the scene!)"
+const UNIQUE = "✨ UNIQUE"
 
+var property_control: Label = Label.new()
+var current_value: String = ""
+
+var _latest_path: String = ""
 
 func _init():
 	# Add the control as a direct child of EditorProperty node.
 	add_child(property_control)
 	refresh_control_text()
+	property_control.modulate = Color.WHITE
 	read_only = true
 
+func _process(_delta):
+	if get_edited_object():
+		var resource_path = get_edited_object().resource_path
+		if !resource_path && (current_value != NEWLY_ADDED):
+			current_value = NEWLY_ADDED
+			refresh_control_text()
+		elif _latest_path != resource_path:
+			_update_property()
 
 func _update_property():
 	var resource: Resource = get_edited_object()
 	var resource_path = resource.resource_path
+	if not(resource_path):
+		return
+	else:
+		_latest_path = resource_path
 	var local_users = 0
 	var global_users = 0
+	# TODO add support for tres files
 	if resource_path.contains("tscn::"):
 		# local resource (saved in scene)
 		var scene_path = resource_path.split("::")[0]
@@ -27,7 +46,7 @@ func _update_property():
 		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
-		var all_tscns = get_all_files("res://", '.tscn')
+		var all_tscns = _get_all_files("res://", '.tscn')
 		for scene_path in all_tscns:
 			var scene_file = FileAccess.open(scene_path, FileAccess.READ)
 			var as_text = scene_file.get_as_text()
@@ -47,20 +66,25 @@ func _update_property():
 					global_users += count
 	var total_users = local_users+global_users
 	var locals = "({0} local)".format([local_users])
-	var unique = " - UNIQUE" if total_users==1 else ""
 	if total_users>0:
-		current_value = "{0} {1} {2}".format([total_users, locals, unique])
+		if (total_users == 1) && (local_users == 1):
+			current_value = UNIQUE
+		else:
+			current_value = "🔗 {0} users {1}".format([total_users, locals])
 	else:
 		current_value = ""
 	refresh_control_text()
 
 func refresh_control_text():
+	if !current_value:
+		return
+	_log("REFRESH: {0}".format([current_value]))
 	property_control.text = current_value
 
 
 ## https://gist.github.com/hiulit/772b8784436898fd7f942750ad99e33e?permalink_comment_id=5196503#gistcomment-5196503
 ## (with some personal edits)
-func get_all_files(path: String, file_ext := "", files : Array[String] = []) -> Array[String]:
+func _get_all_files(path: String, file_ext := "", files : Array[String] = []) -> Array[String]:
 	var dir : = DirAccess.open(path)
 	if file_ext.begins_with("."): # get rid of starting dot if we used, for example ".tscn" instead of "tscn"
 		file_ext = file_ext.substr(1,file_ext.length()-1)
@@ -70,7 +94,7 @@ func get_all_files(path: String, file_ext := "", files : Array[String] = []) -> 
 		while file_name != "":
 			if dir.current_is_dir():
 				# recursion
-				files = get_all_files(dir.get_current_dir() +"/"+ file_name, file_ext, files)
+				files = _get_all_files(dir.get_current_dir() +"/"+ file_name, file_ext, files)
 			else:
 				if file_ext and file_name.get_extension() != file_ext:
 					file_name = dir.get_next()
@@ -81,5 +105,10 @@ func get_all_files(path: String, file_ext := "", files : Array[String] = []) -> 
 					files.append(dir.get_current_dir() +"/"+ file_name)
 			file_name = dir.get_next()
 	else:
-		print("[get_all_files()] An error occurred when trying to access %s." % path)
+		print("[_get_all_files()] An error occurred when trying to access %s." % path)
 	return files
+
+
+func _log(log_string: String):
+	if DEBUG_MODE:
+		print_debug("[resource-users-addon] ", log_string)
