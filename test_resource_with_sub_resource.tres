@@ -4,3 +4,5 @@
 
 [resource]
 next_pass = ExtResource("1_fbt3e")
+transparency = 4
+albedo_color = Color(1, 1, 1, 0.20392157)
