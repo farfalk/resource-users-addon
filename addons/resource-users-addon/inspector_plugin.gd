@@ -9,7 +9,5 @@ func _can_handle(object):
 	else:
 		return false
 
-func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):
-	if name == "resource_local_to_scene":
-		add_property_editor(name, users_counter.new(), true, "Resource Users")
-	return false
+func _parse_begin(object):
+	add_property_editor("resource_users", users_counter.new(), false, "Resource Users")
