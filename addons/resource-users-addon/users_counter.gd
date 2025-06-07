@@ -79,8 +79,8 @@ func _update_property():
 	var total_users = global_users+internal_users
 	var totals = "{0}".format([total_users])
 	var lp = "(" if (internal_users>0) else ""
-	var locals = "{0} in current".format([current_scene_users]) if current_scene_users>0 else ""
-	var c = ", " if (current_scene_users>0) else ""
+	var locals = "{0} in scene".format([current_scene_users]) if current_scene_users>0 else ""
+	var c = ", " if (current_scene_users>0 && nested_users>0) else ""
 	var nested = "{0} nested".format([nested_users]) if nested_users>0 else ""
 	var rp = ")" if (internal_users>0) else ""
 	if total_users>0:
