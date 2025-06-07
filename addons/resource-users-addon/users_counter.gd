@@ -15,7 +15,6 @@ var _latest_path: String = ""
 func _init():
 	add_child(property_control)
 	_refresh_control_text()
-	property_control.modulate = Color.WHITE
 	read_only = true
 
 
@@ -43,15 +42,14 @@ func _update_property():
 		# local resource (saved in scene)
 		var scene_path = resource_path.split("::")[0]
 		var resource_id = resource_path.split("::")[1]
-		var scene_file = FileAccess.open(scene_path, FileAccess.READ)
-		var as_text = scene_file.get_as_text()
+		var as_text = "".join(PackedStringArray(ResourceLoader.get_dependencies(scene_path)))
 		current_scene_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	elif resource_path.contains("tres::"):
 		# local sub-resource (saved in resource)
 		var main_resource_path = resource_path.split("::")[0]
 		var resource_id = resource_path.split("::")[1]
 		var scene_file = FileAccess.open(main_resource_path, FileAccess.READ)
-		var as_text = scene_file.get_as_text()
+		var as_text = "".join(PackedStringArray(ResourceLoader.get_dependencies(main_resource_path)))
 		nested_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
@@ -59,15 +57,8 @@ func _update_property():
 		var all_tres = _get_all_files("res://", '.tres')
 		var all_files = all_tscns + all_tres
 		for file_path in all_files:
-			var file = FileAccess.open(file_path, FileAccess.READ)
-			var as_text = file.get_as_text()
-			var resource_loading_step_index = as_text.find(resource_id)
-			var next_square_bracket_subindex = as_text.substr(resource_loading_step_index, 1000).find("]")
-			var count = -1  # -1 because it ignores the resource definition
-			var split_text = as_text.substr(resource_loading_step_index, next_square_bracket_subindex).split("id=")
-			if len(split_text)>1:
-				var resource_local_id = split_text[1].lstrip("\"").rstrip("\"")
-				count += as_text.count(resource_local_id)
+			var as_text = "".join(PackedStringArray(ResourceLoader.get_dependencies(file_path)))
+			var count = as_text.count(resource_id)
 			if count>0:
 				_log("found {0} occurrences in {1}".format([count, file_path]))
 				if file_path==get_tree().edited_scene_root.scene_file_path:
