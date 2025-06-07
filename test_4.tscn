@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dva1tgm4i4w2s"]
+
+[ext_resource type="Material" uid="uid://btbkl3gyt48m2" path="res://test_sub_resource.tres" id="1_n165w"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_jv3or"]
+
+[node name="Test4" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_n165w")
+mesh = SubResource("TorusMesh_jv3or")

@@ -1,11 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://b04kslbb00owy"]
+[gd_scene load_steps=5 format=3 uid="uid://b04kslbb00owy"]
 
 [ext_resource type="Material" uid="uid://bg6s1ry3jbhgo" path="res://test_resource_with_sub_resource.tres" id="1_iepw4"]
+[ext_resource type="Material" uid="uid://btbkl3gyt48m2" path="res://test_sub_resource.tres" id="2_l5eyt"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_nh7qk"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_5nf12"]
 
 [node name="Test3" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 material_override = ExtResource("1_iepw4")
 mesh = SubResource("SphereMesh_nh7qk")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+material_override = ExtResource("2_l5eyt")
+mesh = SubResource("PrismMesh_5nf12")

@@ -1,10 +1,10 @@
 @tool
 extends EditorProperty
 
-const DEBUG_MODE = true
+const DEBUG_MODE = false
 
 const NEWLY_ADDED = "(newly added, save the scene!)"
-const UNIQUE = "✨ UNIQUE"
+const UNIQUE = "UNIQUE"
 
 var property_control: Label = Label.new()
 var current_value: String = ""
@@ -36,22 +36,23 @@ func _update_property():
 		return
 	else:
 		_latest_path = resource_path
-	var local_users = 0
+	var current_scene_users = 0
 	var global_users = 0
+	var nested_users = 0
 	if resource_path.contains("tscn::"):
 		# local resource (saved in scene)
 		var scene_path = resource_path.split("::")[0]
 		var resource_id = resource_path.split("::")[1]
 		var scene_file = FileAccess.open(scene_path, FileAccess.READ)
 		var as_text = scene_file.get_as_text()
-		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
+		current_scene_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	elif resource_path.contains("tres::"):
 		# local sub-resource (saved in resource)
 		var main_resource_path = resource_path.split("::")[0]
 		var resource_id = resource_path.split("::")[1]
 		var scene_file = FileAccess.open(main_resource_path, FileAccess.READ)
 		var as_text = scene_file.get_as_text()
-		local_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
+		nested_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
 		var all_tscns = _get_all_files("res://", '.tscn')
@@ -71,16 +72,24 @@ func _update_property():
 				_log("found {0} occurrences in {1}".format([count, file_path]))
 				if file_path==get_tree().edited_scene_root.scene_file_path:
 					# the local scene is one of the scenes that contain the resource!
-					local_users += count
+					current_scene_users += count
+				elif file_path.contains('.tres'):
+					nested_users += count
 				else:
 					global_users += count
-	var total_users = local_users+global_users
-	var locals = "({0} local)".format([local_users])
+	var internal_users = current_scene_users+nested_users
+	var total_users = global_users+internal_users
+	var totals = "{0}".format([total_users])
+	var lp = "(" if (internal_users>0) else ""
+	var locals = "{0} in current".format([current_scene_users]) if current_scene_users>0 else ""
+	var c = ", " if (internal_users>0) else ""
+	var nested = "{0} nested".format([nested_users]) if nested_users>0 else ""
+	var rp = ")" if (internal_users>0) else ""
 	if total_users>0:
-		if (total_users == 1) && (local_users == 1):
+		if (total_users == 1 && current_scene_users==1) || (total_users == 1 && nested_users==1):
 			current_value = UNIQUE
 		else:
-			current_value = "🔗 {0} users {1}".format([total_users, locals])
+			current_value = "{0} {1}{2}{3}{4}{5}".format([totals, lp, locals, c, nested, rp])
 	else:
 		current_value = ""
 	_refresh_control_text()
