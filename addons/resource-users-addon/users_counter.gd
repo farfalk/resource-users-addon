@@ -55,9 +55,6 @@ func _update_property():
 		nested_users += as_text.count(resource_id)-1  # -1 because it ignores the resource definition
 	else:
 		var resource_id = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource_path))
-		#var all_tscns = _get_all_files("res://", '.tscn')
-		#var all_tres = _get_all_files("res://", '.tres')
-		#var all_files = all_tscns + all_tres
 		var all_files = _get_all_resource_files("res://")
 		for file_path in all_files:
 			var file = FileAccess.open(file_path, FileAccess.READ)
@@ -115,7 +112,11 @@ func _get_all_resource_files(path):
 		if res.begins_with(".") || res.ends_with("/"):
 			resources.remove_at(len-i)
 		else:
-			resources[len-i] = path+"/"+res
+			if path.ends_with("://"):
+				resources[len-i] = path+res
+			else:
+				resources[len-i] = path+"/"+res
+				
 	return resources
 
 
