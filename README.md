@@ -9,4 +9,4 @@ The main resource (a material) is saved as a .tres and used exactly once in the 
 - figure out how to build a "resource users database" in the .godot folder, so that it doesn't need to parse the whole project each time
 - is it possible to show this as a symbol in the preview?
 - maybe a popup that shows all the users if not unique? 
-
+- probably makes sense to show if it's marked "local to scene" as well?
