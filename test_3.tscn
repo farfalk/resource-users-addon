@@ -16,3 +16,7 @@ mesh = SubResource("SphereMesh_nh7qk")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
 material_override = ExtResource("2_l5eyt")
 mesh = SubResource("PrismMesh_5nf12")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_iepw4")
+mesh = SubResource("SphereMesh_nh7qk")
